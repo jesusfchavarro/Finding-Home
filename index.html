@@ -9,9 +9,10 @@
    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.9/semantic.min.js"></script>
    <script src="https://d3js.org/d3.v3.min.js"></script>
-   <script src="http://code.highcharts.com/highcharts.js"></script>
+   <script src="https://code.highcharts.com/highcharts.js"></script>
    <script src="js/soda.js"></script>
    <script src="js/c3.js"></script>
+   <script src="js/d3plus.js"></script>
 
    <script src="js/climate.js"></script>
 
@@ -125,7 +126,7 @@
                         <input type="range" min=2001 max=2017 step='1' value='2017' id="range-crime" disabled="disabled">
                      </div>
                      <div class="field">
-                        <label>Send Receipt To:</label>
+                        <label>Select a couple of community areas:</label>
                         <div class="ui fluid multiple search selection dropdown community1">
                            <input type="hidden" name="community1">
                            <i class="dropdown icon"></i>
@@ -133,7 +134,33 @@
                            <div class="menu"></div>
                         </div>
                      </div>
+                     <div class="inline fields">
+                        <label>Chart type?</label>
+                        <div class="field">
+                           <div class="ui radio checkbox">
+                              <input type="radio" name="chartType" checked="checked" value="pie">
+                              <label>Pie Chart</label>
+                           </div>
+                        </div>
+                        <div class="field">
+                           <div class="ui radio checkbox">
+                              <input type="radio" name="chartType" value="donut">
+                              <label>Donut Chart</label>
+                           </div>
+                        </div>
+                        <div class="field">
+                           <div class="ui radio checkbox">
+                              <input type="radio" name="chartType" value="bar">
+                              <label>Bar Chart</label>
+                           </div>
+                        </div>
+                     </div>
                      <div class="field" id="crimeRatePie">
+
+                     </div>
+                  </div>
+                  <div class="field">
+                     <div class="field" id="radarChart">
 
                      </div>
                   </div>
@@ -212,12 +239,18 @@
             </a>
             <div class="menu">
                <p>This is Finding Home, an app desing to help you to make your best decision.<br>
-
                </p>
+
             </div>
          </li>
-      </ul>
 
+      </ul>
+      <div class="ui left floated compact segment" style="margin-left: 50px;">
+         <div class="ui toggle checkbox">
+            <input type="checkbox" id="lock">
+            <label >Lock the bar!</label>
+         </div>
+      </div>
       <ul class="logout">
 
       </ul>

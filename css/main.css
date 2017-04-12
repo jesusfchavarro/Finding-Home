@@ -1,0 +1,112 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 15px;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+}
+
+#layer-menu {
+    position: absolute;
+    right: 0;
+    background: #fff;
+    padding: 10px;
+    width: 100px;
+    font-size: 16px;
+    font-family: 'Titillium Web', 'Open Sans', sans-serif;
+    text-transform: capitalize;
+}
+
+span.flaticon-layers.fa-1x {
+    font-size: 20px;
+}
+
+.menu {
+    color: #5d5d5d;
+    font-family: 'Titillium Web', sans-serif;
+    position: relative;
+    margin: 5px 0px;
+    left: 50px;
+    height: auto;
+    width: 454px;
+    /* display: none; */
+}
+
+#UIC-flag {
+    background-image: url('../svg/university-marker.svg');
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
+
+.houses-markers {
+    background-image: url('../svg/rent-marker.svg');
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.search-marker {
+    background-image: url('../svg/search-marker.svg');
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.police-station-markers {
+    background-image: url('../svg/police-station-marker.svg');
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.fire-station-markers {
+    background-image: url('../svg/fire-station-marker.svg');
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.librarie-markers {
+    background-image: url('../svg/librarie-marker.svg');
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
+.chartTitle {
+    margin: 2px;
+    text-align: center;
+}
+
+div.chart {
+    max-width: 440px;
+}
+
+.ui.form {
+    max-width: 420px;
+}
+
+div>.ui {
+    margin: 2px 0px;
+}
+
+.ui.segment {
+    width: 422px;
+}
+
+.none {
+    display: none;
+}
