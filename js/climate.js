@@ -239,7 +239,7 @@ function sum(acc, v, i) {
 
    var today = new Date();
    $.ajax({
-         url: "http://plenar.io/v1/api/weather/metar/?wban_code=94846&datetime__ge=" + new Date(today - (24000 * 3600 * 5))
+         url: "//plenar.io/v1/api/weather/metar/?wban_code=94846&datetime__ge=" + new Date(today - (24000 * 3600 * 5))
             .format() + "&datetime__le=" + today.format(),
       })
       .done(function(d) {
