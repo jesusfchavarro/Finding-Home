@@ -86,7 +86,7 @@ var drag = {
          "coordinates": [center[0]- 0.02, center[1]]
       },
       "properties": {
-         "id": 1
+         "id": 2
       }
    }]
 };
