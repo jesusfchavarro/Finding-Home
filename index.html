@@ -10,12 +10,14 @@
    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.9/semantic.min.js"></script>
    <script src="https://d3js.org/d3.v3.min.js"></script>
    <script src="https://code.highcharts.com/highcharts.js"></script>
+   <script src="http://static.fusioncharts.com/code/latest/fusioncharts.js?cacheBust=8232"></script>
+   <script src="http://static.fusioncharts.com/code/latest/fusioncharts.charts.js?cacheBust=8232"></script>
+   <script src="http://static.fusioncharts.com/code/latest/fusioncharts.widgets.js?cacheBust=8232"></script>
    <script src="js/soda.js"></script>
    <script src="js/c3.js"></script>
    <script src="js/d3plus.js"></script>
 
-   <script src="js/climate.js"></script>
-
+   <link rel="icon" href="favicon.ico">
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.9/semantic.min.css">
    <link href="css/c3.css" rel="stylesheet" type="text/css">
    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.35.0/mapbox-gl.css' rel='stylesheet' />
@@ -169,6 +171,9 @@
 
                   </div>
                </form>
+               <h4 class="ui dividing header">Draggables Loupes</h4>
+               <div id="buildingChart"></div>
+               <p>*Drag a drop the loupes market to compare littles areas <br> The radius is the 1.5Km <br> lock the bar to best experience</p>
             </div>
 
          </li>
@@ -180,9 +185,12 @@
                         </span>
             </a>
             <div class="menu">
-               <p class="chartTitle">Chicago weather: <br>Temperature - last 7 days</p>
+                <p class="chartTitle">Chicago weather:</p>
+               <div id="thermometer"></div>
+               <img id="wheater" src="images/sun-cloud.png" alt="">
+               <p class="chartTitle"><br>Temperature - last 10 days</p>
                <div id="tmpChart" class="chart"></div>
-               <p>Don't you like this chart? Ok, <strong class="click-me" data-chart="TMP"> click me!</strong></p>
+               <p>*With the mouse wheel you can zoom the chart <br> Don't you like this chart? Ok, <strong class="click-me" data-chart="TMP"> click me!</strong></p>
                <form class="ui form TMP">
                   <h4 class="ui dividing header">Choose a chart type</h4>
                   <div class="two fields">
@@ -210,7 +218,7 @@
                   </div>
                </form>
                <div id="prcpChart" class="chart"></div>
-               <p>Don't you like this chart? Ok, <strong class="click-me" data-chart="PRCP"> click me!</strong></p>
+               <p>*Selecting an area you can zoom the chart <br>Don't you like this chart? Ok, <strong class="click-me" data-chart="PRCP"> click me!</strong></p>
                <form class="ui form PRCP">
                   <h4 class="ui dividing header">Choose a chart type</h4>
                   <div class="field">
@@ -256,6 +264,7 @@
       </ul>
    </nav>
    <div id='map'></div>
+   <script src="js/climate.js"></script>
    <script src="js/interaction.js"></script>
    <script src="js/map.js"></script>
    <script src="js/mapData.js"></script>

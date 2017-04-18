@@ -118,7 +118,7 @@ $("input[type=\"range\"]")
                return [data[number].name, crimeStops[s][number].count];
             })
       }
-      console.log(d);
+
       charts["crimeRatePie"] = c3.generate({
          bindto: '#crimeRatePie',
          data: {

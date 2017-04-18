@@ -67,14 +67,11 @@ Keywords: near, housing, safety, open data, bicycle, facilities
 - [C3.js](https://github.com/c3js/c3): Is a D3-based reusable chart library that enables deeper integration of charts into web applications.
 - [Highcharts JS](https://github.com/highcharts/highcharts): Is a JavaScript charting library based on SVG, with fallbacks to VML and canvas for old browsers.
 - [JQuery](https://github.com/jquery/jquery): A library for DOM manipulation, animation, event handling, AJAX requests and more.
-
-- [Soda js](https://github.com/socrata/soda-js): A client implementation of the Socrata Open Data API
-
+- [Soda js](https://github.com/socrata/soda-js): A client implementation of the Socrata Open Data API. -I have to modified a little to get GeoJson files
 - [Plenar.io](https://github.com/UrbanCCD-UChicago/plenario): API for geospatial and time aggregation across multiple open datasets.
-
 - [Semantic UI](https://github.com/semantic-org/semantic-ui/): Is a UI framework designed for theming and build beautiful websites.
-
 - [D3 Plus](https://github.com/alexandersimoes/d3plus): A javascript library that extends D3.js to enable fast and beautiful visualizations.
+- [FusionCharts](http://www.fusioncharts.com/): Is a javascript library that creates charts dynamically with svg.
 ## Project
 
 With this App I try to use explore the D3 library and some others like C3, public datasets to make information to improve decisions, explore the options of integrate Mapbox with D3, and learn to make a useful web app with javascript.
@@ -102,3 +99,14 @@ Interaction with Map? List them. (filter on price will affect map markers, sort 
 - Firefox: works perfect
 - IE: the Map don't work 'cause a security problem
 - Edge: the Map don't work 'cause a security problem
+
+## Problems
+
+With the Climate Data Online I found a lot of useful datasets and datatypes to make charts and more, but, almost all the datasets aren't update.  
+
+
+## Author
+
+Jesus Felipe Chavarro Muñoz <br>
+jfchavarrom@unal.edu.co <br>
+jesusfchavarro@gmail.com

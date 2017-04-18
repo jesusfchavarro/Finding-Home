@@ -129,6 +129,7 @@ function getDirections(start, end = center, mode) {
       var bikesRacks = soda.query()
          .withDataset('uh4d-zh38') //Bike Racks
          .select("location")
+         .limit(5000)
          .geojson(true)
 
       map.addSource("bikesRacks", {
@@ -187,6 +188,7 @@ function getDirections(start, end = center, mode) {
          .withDataset('aavc-b2wj') //Divvy Bike station
          .select("location, total_docks")
          .where("status='In Service'")
+         .limit(5000)
          .geojson(true)
 
       map.addSource("divvyStations", {
@@ -314,7 +316,6 @@ function getDirections(start, end = center, mode) {
             .getRows()
             .on("success", function(data) {
 
-              console.log(data);
                   var name = e.features[0].properties.community;
                   var dat = []
                   for (var x in data[0]) {
@@ -327,7 +328,6 @@ function getDirections(start, end = center, mode) {
                         "value": +data[0][x]
                      })
                   }
-                console.log(dat);
                 $("#radarChart").html("<h5>Public Health Statistics</h5>")
                d3plus.viz()
                   .container("#radarChart")
@@ -339,7 +339,6 @@ function getDirections(start, end = center, mode) {
                     size:14,
                     transform:"capitalize"
                   })
-
                   .type("radar")
                   .draw();
 
