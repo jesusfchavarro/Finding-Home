@@ -90,10 +90,10 @@ var houseMarkers = [];
                      "Phone Number: " + (data[i].phone_number || " ") + "<br>");
 
 
-               if(data[i].distance > 5000){
-                 point.className = "houses-markers none";
-               }else{
-                 point.className = "houses-markers";
+               if (data[i].distance > 3000) {
+                  point.className = "houses-markers none";
+               } else {
+                  point.className = "houses-markers";
                }
                if (coord[0] && coord[1]) {
                   new mapboxgl.Marker(point, {
@@ -102,7 +102,10 @@ var houseMarkers = [];
                      .setLngLat(coord)
                      .setPopup(popup) // sets a popup on this marker
                      .addTo(map);
-                  houseMarkers.push({distance:data[i].distance,html:point});
+                  houseMarkers.push({
+                     distance: data[i].distance,
+                     html: point
+                  });
                }
 
             }
@@ -273,7 +276,7 @@ var houseMarkers = [];
          .range(['rgb(49,163,84,0.5)', "rgb(222,45,38,0.5)"])
 
       var a = soda.query()
-         .withDataset('6zsd-86xi')//crimes
+         .withDataset('6zsd-86xi') //crimes
          .select("year,community_area,count(*)")
          .where("community_area IS NOT NULL")
          .group("community_area,year")
@@ -325,19 +328,20 @@ var houseMarkers = [];
             .getRows()
             .on("success", function(data) {
 
-                  var name = e.features[0].properties.community;
-                  var dat = []
-                  for (var x in data[0]) {
-                    if(x == "diabetes"){
-                      data[0][x] =+data[0][x]/10
-                    }
-                     dat.push({
-                        "name": name,
-                        "skill": x.replace(/_/g, " "),
-                        "value": +data[0][x]
-                     })
+               var name = e.features[0].properties.community;
+               var dat = []
+               for (var x in data[0]) {
+                  if (x == "diabetes") {
+                     data[0][x] = +data[0][x] / 10
                   }
-                $("#radarChart").html("<h5>Public Health Statistics</h5>")
+                  dat.push({
+                     "name": name,
+                     "skill": x.replace(/_/g, " "),
+                     "value": +data[0][x]
+                  })
+               }
+               $("#radarChart")
+                  .html("<h5>Public Health Statistics</h5>")
                d3plus.viz()
                   .container("#radarChart")
                   .data(dat)
@@ -345,8 +349,8 @@ var houseMarkers = [];
                   .size("value")
                   .height(400)
                   .font({
-                    size:14,
-                    transform:"capitalize"
+                     size: 14,
+                     transform: "capitalize"
                   })
                   .type("radar")
                   .draw();
@@ -416,6 +420,36 @@ var houseMarkers = [];
          });
 
       soda.query()
+         .withDataset('t57k-za2y') //Clinics
+         .select("street_address, location,site_name, clinic_type, phone_1")
+         .getRows()
+         .on('success', function(data) {
+            for (var i = 0; i < data.length; i++) {
+               var point = document.createElement('div');
+               var popup = new mapboxgl.Popup({
+                     offset: 25
+                  })
+                  .setHTML("<strong>Clinic</strong><br>Name: " + (data[i].site_name || " ") +
+                     "<br>Type: " + (data[i].clinic_type || " ") +
+                     "<br>Address: " + (data[i].street_address || " ") +
+                     "<br>Phone: " + (data[i].phone_1 || " ")
+                );
+
+               point.className = "public-health-clinic none"
+               new mapboxgl.Marker(point, {
+                     offset: [-16, -16]
+                  })
+                  .setLngLat(data[i].location.coordinates)
+                  .setPopup(popup) // sets a popup on this marker
+                  .addTo(map);
+            }
+         })
+         .on('error', function(error) {
+            console.log("Some data can't load, please refresh the page");
+            console.error(error);
+         });
+
+      soda.query()
          .withDataset('psqp-6rmg') //libraries
          .select("address, location, phone, cybernavigator, teacher_in_the_library")
          .getRows()
@@ -429,7 +463,7 @@ var houseMarkers = [];
                      "Address: " + (data[i].address || " ") + "<br>" +
                      "Teacher in the library: " + (data[i].teacher_in_the_library || " ") + "<br>" +
                      "cybernavigator: " + (data[i].cybernavigator || " ") + "<br>"
-                   );
+                  );
 
                point.className = "librarie-markers none"
                new mapboxgl.Marker(point, {

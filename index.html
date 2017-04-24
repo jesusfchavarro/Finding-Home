@@ -59,6 +59,12 @@
                   </div>
                   <div class="field">
                      <div class="ui toggle checkbox">
+                        <input class="layer-menu" type="checkbox" data-layer="public-health-clinic">
+                        <label>Public Health Clinic</label>
+                     </div>
+                  </div>
+                  <div class="field">
+                     <div class="ui toggle checkbox">
                         <input class="layer-menu2" type="checkbox" data-layer="unclustered-bikeRacks,clustered-bikeRacks,bikeRacks-count">
                         <label>Bike Racks - is you love your bike</label>
                      </div>
@@ -71,8 +77,8 @@
                   </div>
                   <h3>Filters</h3>
                   <div class="field">
-                     <label>Only show Affordable Rental Houses in a distance of <span id="distance-University">5</span>Km: </label>
-                     <input type="range" min=1.5 max=27 step='0.5' value='5' id="max-distance">
+                     <label>Only show Affordable Rental Houses in a distance of <span id="distance-University">3</span>Km: </label>
+                     <input type="range" min=1.5 max=27 step='0.5' value='2' id="max-distance">
                   </div>
                   <h4 class="ui dividing header ">Transport</h4>
                   <div class="grouped fields">
@@ -177,8 +183,10 @@
                   </div>
                </form>
                <h4 class="ui dividing header">Draggables Loupes</h4>
+               <h5>Numbers of building per area</h5>
                <div id="buildingChart"></div>
-               <p>*Drag a drop the loupes market to compare littles areas <br> The radius is the 1Km <br> lock the bar to best experience</p>
+               <div id="treeMap1"></div>
+               <p>*Click in the tree map to more information about parks <br>*Drag a drop the loupes markers to compare 1Km areas <br> Lock the bar to best experience</p>
             </div>
 
          </li>
@@ -270,6 +278,7 @@
       </ul>
    </nav>
    <div id='map'></div>
+   <script src="js/echarts.js"></script>
    <script src="js/climate.js"></script>
    <script src="js/interaction.js"></script>
    <script src="js/MapBoxInteraction.js"></script>

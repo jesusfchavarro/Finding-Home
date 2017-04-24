@@ -91,20 +91,21 @@ var charts = {},
       .withDataset('b4bk-rjxe');
    datasets["Affordable_rental_houses"] = soda.query()
       .withDataset('uahe-iimk');
-   datasets["parks"] = soda.query()
-      .withDataset('4xwe-2j3y');
-
+   datasets["public_health_clinic"] = soda.query()
+      .withDataset('t57k-za2y');
    $.when(
          $.ajax(datasets["Affordable_rental_houses"].select(select)
             .getURL()),
          $.ajax(datasets["polices_stations"].select(select)
             .getURL()),
          $.ajax(datasets["fire_stations"].select(select)
+            .getURL()),
+         $.ajax(datasets["public_health_clinic"].select(select)
             .getURL())
       )
       .done(function(v1, v2, v3) {
          var columns = [
-            ['x', "Affordable rental houses", 'Police Stations', 'Fire Stations']
+            ['x', "Affordable rental houses", 'Police Stations', 'Fire Stations', 'Public Health Clinics']
          ];
          for (var i = 1; i <= drag.features.length; i++) {
             columns.push(["Loupe " + i])
@@ -135,9 +136,58 @@ var charts = {},
                      multiline: true
                   },
                   height: 50
+               },
+               y: {
+                  max: 20
                }
             }
          });
       });
+
+
+      var within = function(name,lat, long, radius){
+        return "within_circle("+ name + "," + lat +"," + long + "," + radius + ")";
+      };
+
+      var ca = [];
+      var wh = []
+      var co = [];
+var loupesColors = ["Blue", "Orange", "Green"];
+      for (var i = 0; i < drag.features.length; i++) {
+        co = drag.features[i].geometry.coordinates;
+        var tmp = within("the_geom",co[1], co[0], 1500);
+        ca.push(tmp + "," + i);
+        wh.push(tmp);
+      }
+      ca = ca.join(",");
+      wh = wh.join(" OR ");
+
+      soda.query()
+         .withDataset('eix4-gf83')
+         .select("facility_n as Name, CASE(" + ca + /*",true,-1*/") as loupe, count(*)")
+         .group("facility_n, loupe")
+         .where(wh)
+         .order("loupe")
+         .limit(5000)
+         .getRows()
+         .on('success', function(data){
+
+           data = data.map(function(curr){
+             return {Name:curr.Name, loupe:loupesColors[curr.loupe],count:+curr.count}
+           });
+
+
+             charts["treeMap"] = d3plus.viz()
+                 .container("#treeMap1")
+                 .data(data)
+                 .type("tree_map")
+                 .id(["loupe","Name"])
+                 .size("count")
+                 .height(400)
+                 .width(400)
+                 .draw()
+
+
+         });
 
 })(new soda.Consumer('data.cityofchicago.org'));

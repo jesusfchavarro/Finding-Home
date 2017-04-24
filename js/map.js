@@ -65,7 +65,7 @@ var drag = {
       "type": "Feature",
       "geometry": {
          "type": "Point",
-         "coordinates": [center[0], center[1] + 0.015]
+         "coordinates": [center[0], center[1] + 0.01]
       },
       "properties": {
          "id": 0
@@ -79,11 +79,11 @@ var drag = {
       "properties": {
          "id": 1
       }
-   },{
+   }, {
       "type": "Feature",
       "geometry": {
          "type": "Point",
-         "coordinates": [center[0]- 0.02, center[1]]
+         "coordinates": [center[0] - 0.02, center[1]]
       },
       "properties": {
          "id": 2
@@ -135,6 +135,55 @@ function onUp(e) {
    });
    var so = new soda.Consumer('data.cityofchicago.org')
    var select = select.join(",");
+
+
+   var within = function(name, lat, long, radius) {
+      return "within_circle(" + name + "," + lat + "," + long + "," + radius + ")";
+   };
+
+   var ca = [];
+   var wh = []
+   var co = [];
+
+   for (var i = 0; i < drag.features.length; i++) {
+      co = drag.features[i].geometry.coordinates;
+      var tmp = within("the_geom", co[1], co[0], 1500);
+      ca.push(tmp + "," + i);
+      wh.push(tmp);
+   }
+   ca = ca.join(",");
+   wh = wh.join(" OR ");
+   so.query()
+      .withDataset('eix4-gf83')
+      .select("facility_n as Name, CASE(" + ca + /*",true,-1*/ ") as loupe, count(*)")
+      .group("facility_n, loupe")
+      .where(wh)
+      .order("loupe")
+      .limit(5000)
+      .getRows()
+      .on('success', function(data) {
+        var loupesColors = ["Blue", "Orange", "Green"];
+         data = data.map(function(curr) {
+            return {
+               Name: curr.Name,
+               loupe: loupesColors[curr.loupe],
+               count: +curr.count
+            }
+         });
+
+         $("#treeMap1")
+            .html("<h5>Park District Facilities by loupe area</h5>")
+         charts["treeMap"] = d3plus.viz()
+            .container("#treeMap1")
+            .data(data)
+            .type("tree_map")
+            .id(["loupe", "Name"])
+            .size("count")
+            .height(400)
+            .width(400)
+            .draw()
+      });
+
    $.when(
 
          $.ajax(so.query()
@@ -147,6 +196,10 @@ function onUp(e) {
             .getURL()),
          $.ajax(so.query()
             .withDataset('b4bk-rjxe')
+            .select(select)
+            .getURL()),
+         $.ajax(so.query()
+            .withDataset('t57k-za2y')
             .select(select)
             .getURL()))
       .done(function(v1, v2, v3) {
@@ -231,9 +284,14 @@ map.on('load', function() {
             base: 2
          },
          "circle-color": {
-           "property": "id",
-           "type": 'categorical',
-           "stops" : d3.scale.category10().domain([0,10]).range().map(function(val, ind){return [ind, val]})
+            "property": "id",
+            "type": 'categorical',
+            "stops": d3.scale.category10()
+               .domain([0, 10])
+               .range()
+               .map(function(val, ind) {
+                  return [ind, val]
+               })
          },
          "circle-opacity": 0.4
       }

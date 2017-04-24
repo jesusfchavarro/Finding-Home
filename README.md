@@ -44,16 +44,25 @@ Keywords: near, housing, safety, open data, bicycle, facilities
 
   columns used: address, location, phone, cybernavigator, teacher_in_the_library
 
+- [Public Health Clinic Locations](https://data.cityofchicago.org/Health-Human-Services/Chicago-Department-of-Public-Health-Clinic-Locatio/kcki-hnch) - City of Chicago Mental Health, Sexually Transmitted Infection (STI) Specialty, and Women Infant Children (WIC) clinic locations
+
+  columns used: street_address, location,site_name, clinic_type, phone_1
+
 - [Bikes Racks](https://data.cityofchicago.org/Transportation/Bike-Racks/cbyb-69xx) - Bike racks location in Chicago.
 
   columns used:location
 
-- [Divvy Bicycle Stations](https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations/bbyy-e7gq) - A list of the stations where one can pick up and return bicycles from the Divvy bicycle sharing system
+- [Divvy Bicycle Stations](https://data.cityofchicago.org/Transportation/Divvy-Bicycle-Stations/bbyy-e7gq) - A list of the stations where one can pick up and return bicycles from the Divvy bicycle sharing system.
 
   columns used:location, total_docks
-- [Public Health Statistics- Selected public health indicators by Chicago community area](https://data.cityofchicago.org/Health-Human-Services/Public-Health-Statistics-Selected-public-health-in/iqnk-2tcu) - This dataset contains a selection of 27 indicators of public health significance by Chicago community area
+
+- [Public Health Statistics- Selected public health indicators by Chicago community area](https://data.cityofchicago.org/Health-Human-Services/Public-Health-Statistics-Selected-public-health-in/iqnk-2tcu) - This dataset contains a selection of 27 indicators of public health significance by Chicago community area.
 
   columns used:assault_homicide as homicide, diabetes_related as diabetes,firearm_related, infant_mortality_rate as infant_mortality, stroke_cerebrovascular_disease, tuberculosis, lung_cancer, unemployment
+
+  - [Chicago Park District Facilities](https://data.cityofchicago.org/Parks-Recreation/Parks-Chicago-Park-District-Facilities/5yyk-qt9y) - Facilities managed & maintained by the Chicago Park District as of November 4, 2016.
+
+    columns used:assault_homicide as homicide, diabetes_related as diabetes,firearm_related, infant_mortality_rate as infant_mortality, stroke_cerebrovascular_disease, tuberculosis, lung_cancer, unemployment
 
 
 - Do you use the primary dataset ”online climate data” from data.gov? Yes
@@ -68,7 +77,7 @@ Keywords: near, housing, safety, open data, bicycle, facilities
 - [Highcharts JS](https://github.com/highcharts/highcharts): Is a JavaScript charting library based on SVG, with fallbacks to VML and canvas for old browsers.
 - [JQuery](https://github.com/jquery/jquery): A library for DOM manipulation, animation, event handling, AJAX requests and more.
 - [Soda js](https://github.com/socrata/soda-js): A client implementation of the Socrata Open Data API. -I have to modified a little to get GeoJson files
-- [Plenar.io](https://github.com/UrbanCCD-UChicago/plenario): API for geospatial and time aggregation across multiple open datasets.
+- [Plenar.io](https://github.com/UrbanCCD-UChicago/plenario): API for geospatial and time aggregation across multiple open datasets. \*the request is over http, to avoid problems with mixed contents with GitHub pages I decided don't use it.
 - [Semantic UI](https://github.com/semantic-org/semantic-ui/): Is a UI framework designed for theming and build beautiful websites.
 - [D3 Plus](https://github.com/alexandersimoes/d3plus): A javascript library that extends D3.js to enable fast and beautiful visualizations.
 - [FusionCharts](http://www.fusioncharts.com/): Is a javascript library that creates charts dynamically with svg.
@@ -104,6 +113,7 @@ Interaction with Map? List them. (filter on price will affect map markers, sort 
 
 With the Climate Data Online I found a lot of useful datasets and datatypes to make charts and more, but, almost all the datasets aren't update.  
 
+All works fine local, when I upload to github pages I realize that I can't do http requests, because github pages is over the https protocol.  
 
 ## Author
 

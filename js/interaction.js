@@ -80,8 +80,6 @@ $("#max-distance")
         }else{
           $(houseMarkers[i].html).addClass("none")
         }
-        console.log("houseMarkers[i].distance < this.value");
-        console.log(houseMarkers[i].distance + "<" + s);
       }
    })
 

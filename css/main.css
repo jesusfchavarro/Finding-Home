@@ -86,6 +86,14 @@ span.flaticon-layers.fa-1x {
     cursor: pointer;
 }
 
+.public-health-clinic {
+    background-image: url('../svg/hospital-marker.svg');
+    background-size: cover;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+}
+
 .chartTitle {
     margin: 2px;
     text-align: center;
