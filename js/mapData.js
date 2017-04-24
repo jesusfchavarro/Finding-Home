@@ -29,7 +29,7 @@ function getDirections(start, end = center, mode) {
       })
    return data
 }
-
+var houseMarkers = [];
 (function(soda) {
    map.on('load', function() {
       map.addSource("route", {
@@ -50,10 +50,12 @@ function getDirections(start, end = center, mode) {
             "line-width": 7
          }
       });
+
       soda.query()
          .withDataset('uahe-iimk') //rent houses datasets
-         .select("property_name, address, community_area, property_type, phone_number, longitude, latitude")
+         .select("property_name, address, community_area, property_type, phone_number, longitude, latitude, DISTANCE_IN_METERS(location, 'POINT(" + center[0] + " " + center[1] + ")') as distance")
          .where("location IS NOT NULL")
+         .order("distance")
          .getRows()
          .on('success', function(data) {
             function housesPopup(e) {
@@ -65,13 +67,13 @@ function getDirections(start, end = center, mode) {
                setTimeout(function() {
                   var popup = $("div.mapboxgl-popup-content");
                   var t = parseInt(direction.duration / 60)
-                  if (!popup[0].querySelector("p")) {
+                  if (popup[0] && !popup[0].querySelector("p")) {
                      popup.append("<strong>Transportation to UIC:" + $("input[name=transport]:checked")
                         .val() + "</strong><p>Distance: " + (direction.distance > 1000 ? ((direction.distance / 1000)
                            .toFixed(2) + "Km") : direction.distance.toFixed(2) + "m") +
                         "<br>Estimated travel time: " + parseInt(t / 60) + "h " + t % 60 + "m</p>");
                   }
-               }, 0.008)
+               }, 0.010)
             }
 
             for (var i = 0; i < data.length; i++) {
@@ -87,7 +89,12 @@ function getDirections(start, end = center, mode) {
                      "Property Type: " + (data[i].property_type || " ") + "<br>" +
                      "Phone Number: " + (data[i].phone_number || " ") + "<br>");
 
-               point.className = "houses-markers"
+
+               if(data[i].distance > 5000){
+                 point.className = "houses-markers none";
+               }else{
+                 point.className = "houses-markers";
+               }
                if (coord[0] && coord[1]) {
                   new mapboxgl.Marker(point, {
                         offset: [-15, -15]
@@ -95,7 +102,9 @@ function getDirections(start, end = center, mode) {
                      .setLngLat(coord)
                      .setPopup(popup) // sets a popup on this marker
                      .addTo(map);
+                  houseMarkers.push({distance:data[i].distance,html:point});
                }
+
             }
          })
          .on('error', function(error) {
@@ -292,7 +301,7 @@ function getDirections(start, end = center, mode) {
                   })
                   //console.log(crimeStops[val]);
                })
-            console.log(crimeStops);
+            //console.log(crimeStops);
          })
          .on('error', function(error) {
             console.log("Some data can't load, please refresh the page");

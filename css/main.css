@@ -111,8 +111,8 @@ div>.ui {
     display: none;
 }
 
-#thermometer{
-  width: 120px;
+#thermometer, #thermometer2, #thermometer3{
+  width: 140px;
   height: 300px;
   display: inline-block;
 }

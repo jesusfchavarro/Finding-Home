@@ -131,21 +131,22 @@ function onUp(e) {
    var select = drag.features.map(function(curr, i) {
       var coord = curr.geometry.coordinates
       return "sum(case(within_circle(location," + coord[1] + "," + coord[0] +
-         ",1500),1,true,0)) as loupe" + i
+         ",1000),1,true,0)) as loupe" + i
    });
    var so = new soda.Consumer('data.cityofchicago.org')
    var select = select.join(",");
    $.when(
+
+         $.ajax(so.query()
+            .withDataset('uahe-iimk')
+            .select(select)
+            .getURL()),
          $.ajax(so.query()
             .withDataset('9rg7-mz9y')
             .select(select)
             .getURL()),
          $.ajax(so.query()
             .withDataset('b4bk-rjxe')
-            .select(select)
-            .getURL()),
-         $.ajax(so.query()
-            .withDataset('4xwe-2j3y')
             .select(select)
             .getURL()))
       .done(function(v1, v2, v3) {
@@ -225,18 +226,22 @@ map.on('load', function() {
          "circle-radius": {
             stops: [
                [0, 0],
-               [20, metersToPixelsAtMaxZoom(1500, center[1])]
+               [20, metersToPixelsAtMaxZoom(1000, center[1])]
             ],
             base: 2
          },
-         "circle-color": "#3887be",
+         "circle-color": {
+           "property": "id",
+           "type": 'categorical',
+           "stops" : d3.scale.category10().domain([0,10]).range().map(function(val, ind){return [ind, val]})
+         },
          "circle-opacity": 0.4
       }
    });
 
    // When the cursor enters a feature in the point layer, prepare for dragging.
    map.on('mouseenter', 'point', function(e) {
-      map.setPaintProperty('point', 'circle-color', '#3bb2d0');
+      //map.setPaintProperty('point', 'circle-color', '#3bb2d0');
       canvas.style.cursor = 'move';
       window.___point = e.features[0].properties.id;
       isCursorOverPoint = true;
@@ -244,7 +249,7 @@ map.on('load', function() {
    });
 
    map.on('mouseleave', 'point', function() {
-      map.setPaintProperty('point', 'circle-color', '#3887be');
+      //map.setPaintProperty('point', 'circle-color', '#3887be');
       canvas.style.cursor = '';
       isCursorOverPoint = false;
       map.dragPan.enable();

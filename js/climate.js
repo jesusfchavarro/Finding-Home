@@ -77,10 +77,27 @@ function sum(acc, v, i) {
                   headers: {
                      token: token
                   }
+               }),
+               $.ajax({
+                  url: "https://www.ncdc.noaa.gov/cdo-web/api/v2/data/?datatypeid=PRCP&datatypeid=TMAX&datatypeid=TMIN&datatypeid=AWND&datatypeid=SNOW",
+                  data: {
+                     locationid: locationid,
+                     datasetid: "GHCND",
+                     startdate: startDate.format(),
+                     enddate: endDate.format(),
+                     limit: 1000,
+                     sortfield: "date",
+                     units: "metric",
+                     offset: 2001
+                  },
+                  headers: {
+                     token: token
+                  }
                })
             )
-            .done(function(d1, d2) {
-               if (d2 && d2[0] && d2[0].results) d1[0].results.push.apply(d1[0].results, d2[0].results)
+            .done(function(d1, d2, d3) {
+               if (d2 && d2[0] && d2[0].results) d1[0].results.push.apply(d1[0].results, d2[0].results);
+               if (d3 && d3[0] && d3[0].results) d1[0].results.push.apply(d1[0].results, d3[0].results);
                var TMIN = ["Minimum temperature"],
                   TMAX = ["Maximum temperature"],
                   AWND = ["Average wind speed"],
@@ -201,6 +218,75 @@ function sum(acc, v, i) {
                      }
                   }
                });
+
+               var charttermo = new FusionCharts({
+                     type: 'thermometer',
+                     renderAt: 'thermometer',
+                     id: 'temp-monitor',
+                     width: '140',
+                     height: '300',
+                     dataFormat: 'json',
+                     dataSource: {
+                        "chart": {
+                           "caption": "Minimum Termperature",
+                           "subcaptionFontBold": "0",
+                           "lowerLimit": "-20",
+                           "upperLimit": "50",
+                           "numberSuffix": "°C",
+                           "bgColor": "#ffffff",
+                           "showBorder": "0",
+                           "thmFillColor": "#008ee4"
+                        },
+                        "value": TMIN[TMIN.length - 1]
+                     }
+                  })
+                  .render();
+               charttermo = new FusionCharts({
+                     type: 'thermometer',
+                     renderAt: 'thermometer2',
+                     id: 'temp-monitor2',
+                     width: '140',
+                     height: '300',
+                     dataFormat: 'json',
+                     dataSource: {
+                        "chart": {
+                           "caption": "Avarage Termperature",
+                           "subcaptionFontBold": "0",
+                           "lowerLimit": "-20",
+                           "upperLimit": "50",
+                           "numberSuffix": "°C",
+                           "bgColor": "#ffffff",
+                           "showBorder": "0",
+                           "thmFillColor": "#00e462"
+                        },
+                        "value": TAVG[TAVG.length - 1]
+                     }
+                  })
+                  .render();
+
+               charttermo = new FusionCharts({
+                     type: 'thermometer',
+                     renderAt: 'thermometer3',
+                     id: 'temp-monitor3',
+                     width: '140',
+                     height: '300',
+                     dataFormat: 'json',
+                     dataSource: {
+                        "chart": {
+                           "caption": "Max Termperature",
+                           "subcaptionFontBold": "0",
+                           "lowerLimit": "-20",
+                           "upperLimit": "50",
+                           "numberSuffix": "°C",
+                           "bgColor": "#ffffff",
+                           "showBorder": "0",
+                           "thmFillColor": "#e43c00"
+                        },
+                        "value": TMAX[TMAX.length - 1]
+                     }
+                  })
+                  .render();
+
                prcpChart = Highcharts.chart('prcpChart', {
                   chart: {
                      type: 'area',
@@ -236,50 +322,50 @@ function sum(acc, v, i) {
 
             });
       });
-
-   var today = new Date();
-   $.ajax({
-         url: "//plenar.io/v1/api/weather/metar/?wban_code=94846&datetime__ge=" + new Date(today - (24000 * 3600 * 5))
-            .format() + "&datetime__le=" + today.format(),
-      })
-      .done(function(d) {
-         if (d.meta.total > 0) {
-            var temperature = (d.objects[0].observations[0].temp_fahrenheit - 32) * 5 / 9
-            var charttermo = new FusionCharts({
-                  type: 'thermometer',
-                  renderAt: 'thermometer',
-                  id: 'temp-monitor',
-                  width: '120',
-                  height: '300',
-                  dataFormat: 'json',
-                  dataSource: {
-                     "chart": {
-                        "caption": "",
-                        "subcaptionFontBold": "0",
-                        "lowerLimit": "-20",
-                        "upperLimit": "50",
-                        "numberSuffix": "°C",
-                        "bgColor": "#ffffff",
-                        "showBorder": "0",
-                        "thmFillColor": "#008ee4"
-                     },
-                     "value": temperature
+   /*
+      var today = new Date();
+      $.ajax({
+            url: "http://plenar.io/v1/api/weather/metar/?wban_code=94846&datetime__ge=" + new Date(today - (24000 * 3600 * 5))
+               .format() + "&datetime__le=" + today.format(),
+         })
+         .done(function(d) {
+            if (d.meta.total > 0) {
+               var temperature = (d.objects[0].observations[0].temp_fahrenheit - 32) * 5 / 9
+               var charttermo = new FusionCharts({
+                     type: 'thermometer',
+                     renderAt: 'thermometer',
+                     id: 'temp-monitor',
+                     width: '120',
+                     height: '300',
+                     dataFormat: 'json',
+                     dataSource: {
+                        "chart": {
+                           "caption": "Termperature",
+                           "subcaptionFontBold": "0",
+                           "lowerLimit": "-20",
+                           "upperLimit": "50",
+                           "numberSuffix": "°C",
+                           "bgColor": "#ffffff",
+                           "showBorder": "0",
+                           "thmFillColor": "#008ee4"
+                        },
+                        "value": temperature
+                     }
+                  })
+                  .render();
+                  var wheater = "images/"
+                  var sky = d.objects[0].observations[0].sky_condition
+                  if(sky.indexOf("OVC") >= 0){
+                    wheater = "cloud.png";
+                  }else if(sky.indexOf("SCT")){
+                    wheater += "sun-cloud.png"
+                  }else{
+                    wheater += "sun.png"
                   }
-               })
-               .render();
-               var wheater = "images/"
-               var sky = d.objects[0].observations[0].sky_condition
-               if(sky.indexOf("OVC") >= 0){
-                 wheater += "cloud.png";
-               }else if(sky.indexOf("SCT")){
-                 wheater += "sun-cloud.png"
-               }else{
-                 wheater += "sun.png"
-               }
-               $("#wheater")[0].src = wheater;
-         }
-      })
-      .fail(function() {
-         console.log("Error charging data of http://http://plenar.io/v1/api/weather")
-      })
+                  $("#wheater")[0].src = wheater
+            }
+         })
+         .fail(function() {
+            console.log("Error charging data of http://http://plenar.io/v1/api/weather")
+         })*/
 })();

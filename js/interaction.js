@@ -26,24 +26,6 @@ $(".click-me")
 $(".click-me")
    .click();
 
-setTimeout(function() {
-   $(".community_area")
-      .change(function() {
-
-         var visibility = map.getLayoutProperty("community_areas", 'visibility');
-
-         if (visibility === 'visible') {
-            map.setLayoutProperty("community_areas", 'visibility', 'none');
-            this.className = '';
-         } else {
-            this.className = 'active';
-            map.setLayoutProperty("community_areas", 'visibility', 'visible');
-         }
-      });
-}, 5000)
-
-
-
 $("select.ui")
    .change(function() {
       var d = this.getAttribute("data-chart");
@@ -74,35 +56,38 @@ $("input.layer-menu")
          .toggleClass("none");
    })
 
-$("input.layer-menu2")
-   .change(function() {
-      var s = this.getAttribute("data-layer");
-      s.split(",")
-         .map(function(v) {
-            var visibility = map.getLayoutProperty(v, 'visibility');
-            map.setLayoutProperty(v, 'visibility', (visibility === 'visible' ? "none" : "visible"));
-         })
-
-   })
-
-var changeLayer = function(year) {
-   map.setPaintProperty("community_areas", "fill-color", {
-      "property": "area_numbe",
-      "type": "categorical",
-      "stops": crimeStops[year]
-   })
-}
 $("input[type=\"range\"]")
    .on('input', function() {
       $(this)
          .parent()
          .find("span")
          .text(this.value);
-      changeLayer(this.value);
+
    })
 
-$("input[type=\"range\"]")
+$("#lock")
+   .change(function() {
+      $("nav")
+         .toggleClass("expanded")
+   })
+
+$("#max-distance")
    .on('input', function() {
+      var s = this.value*1000;
+      for (var i = houseMarkers.length-1; i > -1; i--) {
+        if(houseMarkers[i].distance < s){
+          $(houseMarkers[i].html).removeClass("none");
+        }else{
+          $(houseMarkers[i].html).addClass("none")
+        }
+        console.log("houseMarkers[i].distance < this.value");
+        console.log(houseMarkers[i].distance + "<" + s);
+      }
+   })
+
+$("#range-crime")
+   .on('input', function() {
+     changeLayer(this.value);
       var s = this.value;
 
       var d = $('input[name=community1]')
@@ -129,29 +114,6 @@ $("input[type=\"range\"]")
             hide: true
          }
       })
-   })
-
-$("#lock").change(function(){
-  $("nav").toggleClass("expanded")
-})
-
-$(".community_area_crime")
-   .change(function() {
-      var slider = $("#range-crime")
-      if (slider[0].disabled) {
-         slider[0].disabled = false;
-         map.setPaintProperty("community_areas", "fill-color", {
-            "property": "area_numbe",
-            "type": "categorical",
-            "stops": crimeStops[slider[0].value]
-         })
-
-      } else {
-         slider[0].disabled = true;
-         map.setPaintProperty("community_areas", "fill-color", "rgba(0,0,0,0.1)")
-
-      }
-
    })
 
 $('input[name=community1]')

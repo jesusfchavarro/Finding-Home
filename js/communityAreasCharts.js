@@ -12,7 +12,6 @@ var charts = {},
       .order("number")
       .getRows()
       .on("success", function(d) {
-         console.log(d);
          for (var i = 0; i < d.length; i++) {
             data[d[i].number] = d[i];
             $('div.community1>.menu')
@@ -20,12 +19,10 @@ var charts = {},
                   d[i].name + '</div>')
          }
          data[0] = {}
-         console.log(data);
          data = Object.keys(data)
             .map(function(key) {
                return data[key];
             });
-         console.log(data);
       })
       .on('error', function(error) {
          console.log("Some data can't load, please refresh the page");
@@ -83,7 +80,7 @@ var charts = {},
    var select = drag.features.map(function(curr, i) {
       var coord = curr.geometry.coordinates
       return "sum(case(within_circle(location," + coord[1] + "," + coord[0] +
-         ",1500),1,true,0)) as loupe" + i
+         ",1000),1,true,0)) as loupe" + i
    });
 
    var select = select.join(",");
@@ -92,19 +89,22 @@ var charts = {},
       .withDataset('9rg7-mz9y');
    datasets["fire_stations"] = soda.query()
       .withDataset('b4bk-rjxe');
+   datasets["Affordable_rental_houses"] = soda.query()
+      .withDataset('uahe-iimk');
    datasets["parks"] = soda.query()
       .withDataset('4xwe-2j3y');
 
    $.when(
+         $.ajax(datasets["Affordable_rental_houses"].select(select)
+            .getURL()),
          $.ajax(datasets["polices_stations"].select(select)
             .getURL()),
          $.ajax(datasets["fire_stations"].select(select)
-            .getURL()),
-         $.ajax(datasets["parks"].select(select)
-            .getURL()))
+            .getURL())
+      )
       .done(function(v1, v2, v3) {
          var columns = [
-            ['x', 'Police Stations', 'Fire Stations', 'Parks']
+            ['x', "Affordable rental houses", 'Police Stations', 'Fire Stations']
          ];
          for (var i = 1; i <= drag.features.length; i++) {
             columns.push(["Loupe " + i])
