@@ -52,8 +52,12 @@ $("select.ui")
 $("input.layer-menu")
    .change(function() {
       var s = this.getAttribute("data-layer");
-      $("." + s)
-         .toggleClass("none");
+      if(layers[s].getMap()){
+        layers[s].setMap(null)
+      }else{
+        layers[s].setMap(map)
+      }
+
    })
 
 $("input[type=\"range\"]")
@@ -74,13 +78,18 @@ $("#lock")
 $("#max-distance")
    .on('input', function() {
       var s = this.value*1000;
-      for (var i = houseMarkers.length-1; i > -1; i--) {
-        if(houseMarkers[i].distance < s){
-          $(houseMarkers[i].html).removeClass("none");
-        }else{
-          $(houseMarkers[i].html).addClass("none")
+      layers["houses-markers"].setStyle(function(f) {
+        return {
+          visible: +f.getProperty('distance') < s,
+          icon: {
+             url: "images/markers/rent-marker.png",
+             scaledSize: {
+                width: 40,
+                height: 40
+             }
+          }
         }
-      }
+      })
    })
 
 $("#range-crime")
