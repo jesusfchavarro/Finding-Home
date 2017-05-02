@@ -1,7 +1,7 @@
 var charts = {},
    data = {},
    datasets = {};
-(function(soda) {
+function displayAreas(soda) {
    $('.dropdown')
       .dropdown();
 
@@ -77,9 +77,9 @@ var charts = {},
       })*/
 
 
-   var select = drag.features.map(function(curr, i) {
-      var coord = curr.geometry.coordinates
-      return "sum(case(within_circle(location," + coord[1] + "," + coord[0] +
+   var select = drag.map(function(curr, i) {
+      var coord = curr.getCenter();
+      return "sum(case(within_circle(location," + coord.lat() + "," + coord.lng() +
          ",1000),1,true,0)) as loupe" + i
    });
 
@@ -107,7 +107,7 @@ var charts = {},
          var columns = [
             ['x', "Affordable rental houses", 'Police Stations', 'Fire Stations', 'Public Health Clinics']
          ];
-         for (var i = 1; i <= drag.features.length; i++) {
+         for (var i = 1; i <= drag.length; i++) {
             columns.push(["Loupe " + i])
          }
          for (var i = 0; i < arguments.length; i++) {
@@ -150,12 +150,12 @@ var charts = {},
       };
 
       var ca = [];
-      var wh = []
+      var wh = [];
       var co = [];
-var loupesColors = ["Blue", "Orange", "Green"];
-      for (var i = 0; i < drag.features.length; i++) {
-        co = drag.features[i].geometry.coordinates;
-        var tmp = within("the_geom",co[1], co[0], 1500);
+      var loupesColors = ["Blue", "Orange", "Green"];
+      for (var i = 0; i < drag.length; i++) {
+        co = drag[i].getCenter();
+        var tmp = within("the_geom",co.lat(), co.lng(), 1500);
         ca.push(tmp + "," + i);
         wh.push(tmp);
       }
@@ -172,22 +172,40 @@ var loupesColors = ["Blue", "Orange", "Green"];
          .getRows()
          .on('success', function(data){
 
-           data = data.map(function(curr){
-             return {Name:curr.Name, loupe:loupesColors[curr.loupe],count:+curr.count}
+           data = data.map(function(curr) {
+              return {
+                 Name: curr.Name,
+                 loupe: "Loupe " + curr.loupe,
+                 Nid: +curr.loupe,
+                 count: +curr.count
+              }
            });
 
+           $("#treeMap1")
+              .html("<h5>Park District Facilities by loupe area</h5>")
+           charts["treeMap"] = d3plus.viz()
+              .container("#treeMap1")
+              .data(data)
+              .type("tree_map")
+              .id(["loupe", "Name"])
+              .size("count")
+              .height(400)
+              .width(400)
+              .color({
+                heatmap: colors,
+                value: function(d){
+                  if( typeof d.Name != 'string'){
+                    return colors[d.loupe.charAt(6)]
+                  }else{
+                    return d.Name.length
+                  }
+                }
 
-             charts["treeMap"] = d3plus.viz()
-                 .container("#treeMap1")
-                 .data(data)
-                 .type("tree_map")
-                 .id(["loupe","Name"])
-                 .size("count")
-                 .height(400)
-                 .width(400)
-                 .draw()
+              })
+              .draw()
+
 
 
          });
 
-})(new soda.Consumer('data.cityofchicago.org'));
+};

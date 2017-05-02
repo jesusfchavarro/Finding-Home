@@ -1,319 +1,176 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiamVzdXNmY2hhdmFycm8iLCJhIjoiY2owd3JhNTg5MDAyMDMzc2Q5djhheHhleiJ9.gbHmrqcN3ktZBZYQmGNVIg';
-
 function metersToPixelsAtMaxZoom(meters, latitude) {
    return meters / 0.075 / Math.cos(latitude * Math.PI / 180)
 }
+
 var isDragging;
 var isCursorOverPoint;
-
-var center = [-87.6505, 41.8708];
+var drag = [];
+var center = {
+   lng: -87.6505,
+   lat: 41.8708
+};
 var dataSets = {};
 var profile = "walking";
 
-function HelloWorldControl() {}
-HelloWorldControl.prototype.onAdd = function(map) {
-   this._map = map;
-   var button = $("<div class=\"mapboxgl-ctrl mapboxgl-ctrl-group\">" +
-      "<button class=\"mapboxgl-ctrl-icon mapboxgl-ctrl-layer\" type=\"button\">" +
-      "<span class=\"flaticon-layers fa-1x \"></span>" +
-      "</div>");
-   var layerMenu = $("<div id=\"layer-menu\" class=\"mapboxgl-ctrl mapboxgl-ctrl-group\">" +
-      "<input name=\"layer\" id=\"basic\" type=\"radio\" value=\"basic\">" +
-      "<label for=\"basic\">basic</label><br>" +
-      "<input name=\"layer\" id=\"streets\" type=\"radio\" value=\"streets\"  checked=\"checked\">" +
-      "<label for=\"streets\">streets</label><br>" +
-      "<input name=\"layer\" id=\"bright\" type=\"radio\" value=\"bright\">" +
-      "<label for=\"bright\">bright</label><br>" +
-      "<input name=\"layer\" id=\"light\" type=\"radio\" value=\"light\">" +
-      "<label for=\"light\">light</label><br>" +
-      "<input name=\"layer\" id=\"dark\" type=\"radio\" value=\"dark\">" +
-      "<label for=\"dark\">dark</label><br>" +
-      "<input name=\"layer\" id=\"satellite\" type=\"radio\" value=\"satellite\">" +
-      "<label for=\"satellite\">satellite</label>" +
-      "</div>");
+var infoWindow;
 
-   var a = button.children()
-      .click(function() {
-         layerMenu.animate({
-            opacity: "toggle",
-            height: "toggle"
-         }, 1000);
-      });
-   layerMenu.children("input")
-      .click(function() {
-         map.setStyle('mapbox://styles/mapbox/' + this.id + '-v9');
-      });
+var map;
 
+var colors = d3.scale.category10()
+   .domain([0, 10])
+   .range();
 
-   button.children()
-      .click();
-   this._container = button[0];
-   this._container.appendChild(layerMenu[0])
-   return this._container;
-};
+var main = function() {
 
-HelloWorldControl.prototype.onRemove = function() {
-   this._container.parentNode.removeChild(this._container);
-   this._map = undefined;
-};
-
-
-
-var drag = {
-   "type": "FeatureCollection",
-   "features": [{
-      "type": "Feature",
-      "geometry": {
-         "type": "Point",
-         "coordinates": [center[0], center[1] + 0.01]
-      },
-      "properties": {
-         "id": 0
-      }
-   }, {
-      "type": "Feature",
-      "geometry": {
-         "type": "Point",
-         "coordinates": [center[0], center[1] - 0.01]
-      },
-      "properties": {
-         "id": 1
-      }
-   }, {
-      "type": "Feature",
-      "geometry": {
-         "type": "Point",
-         "coordinates": [center[0] - 0.02, center[1]]
-      },
-      "properties": {
-         "id": 2
-      }
-   }]
-};
-
-
-function mouseDown() {
-   if (!isCursorOverPoint) return;
-
-   isDragging = true;
-
-   // Set a cursor indicator
-   canvas.style.cursor = 'grab';
-
-   // Mouse events
-   map.on('mousemove', onMove);
-   map.once('mouseup', onUp);
-}
-
-function onMove(e) {
-   if (!isDragging) return;
-   var coords = e.lngLat;
-
-   canvas.style.cursor = 'grabbing';
-   search[window.___point].setLngLat(coords)
-   drag.features[window.___point].geometry.coordinates = [coords.lng, coords.lat];
-   map.getSource('point')
-      .setData(drag);
-}
-
-function onUp(e) {
-   if (!isDragging) return;
-   var coords = e.lngLat;
-
-   // Print the coordinates of where the point had
-   // finished being dragged to on the map.
-   canvas.style.cursor = '';
-   isDragging = false;
-
-   // Unbind mouse events
-   map.off('mousemove', onMove);
-
-   var select = drag.features.map(function(curr, i) {
-      var coord = curr.geometry.coordinates
-      return "sum(case(within_circle(location," + coord[1] + "," + coord[0] +
-         ",1000),1,true,0)) as loupe" + i
+   infoWindow = new google.maps.InfoWindow({
+      content: ''
    });
-   var so = new soda.Consumer('data.cityofchicago.org')
-   var select = select.join(",");
+
+   map = new google.maps.Map(document.getElementById('map'), {
+      center: center,
+      zoom: 14
+   });
+
+   var UniversityMarker = new google.maps.Marker({
+      position: center,
+      icon: {
+         url: "images/markers/university-marker.png",
+         scaledSize: {
+            width: 60,
+            height: 60
+         }
+      },
+      map: map
+   });
+
+   UniversityMarker.addListener('click', function() {
+      infoWindow.setContent('Department of Computer Science <br> University of Illinois, Chicago');
+      infoWindow.open(map, UniversityMarker);
+   });
+   var sodaC = new soda.Consumer('data.cityofchicago.org');
+   markersDisplay(sodaC);
+
+   //loupes
+   drag = [new google.maps.LatLng(center["lat"] + 0.01, center["lng"]), new google.maps.LatLng(center["lat"] - 0.01, center["lng"]), new google.maps.LatLng(center["lat"], center["lng"] - 0.02)]
 
 
-   var within = function(name, lat, long, radius) {
-      return "within_circle(" + name + "," + lat + "," + long + "," + radius + ")";
-   };
+   drag = drag.map(function(v, i) {
+      return new google.maps.Circle({
+         center: v,
+         radius: 1000,
+         draggable: true,
+         strokeWeight: 0,
+         fillColor: colors[i],
+         fillOpacity: 0.5,
+         map: map,
+         zIndex: 100
+      });
+   })
 
-   var ca = [];
-   var wh = []
-   var co = [];
+   for (var i = 0; i < drag.length; i++) {
+     drag[i].addListener('dragend',function(e) {
+       var coords = e.lngLat;
 
-   for (var i = 0; i < drag.features.length; i++) {
-      co = drag.features[i].geometry.coordinates;
-      var tmp = within("the_geom", co[1], co[0], 1500);
-      ca.push(tmp + "," + i);
-      wh.push(tmp);
+       var select = drag.map(function(curr, i) {
+          var coord = curr.getCenter();
+          return "sum(case(within_circle(location," + coord.lat() + "," + coord.lng() +
+             ",1000),1,true,0)) as loupe" + i
+       });
+       var so = new soda.Consumer('data.cityofchicago.org')
+       var select = select.join(",");
+
+
+       var within = function(name, lat, long, radius) {
+          return "within_circle(" + name + "," + lat + "," + long + "," + radius + ")";
+       };
+
+       var ca = [];
+       var wh = []
+       var co = [];
+
+       for (var i = 0; i < drag.length; i++) {
+         co = drag[i].getCenter();
+         var tmp = within("the_geom",co.lat(), co.lng(), 1500);
+         ca.push(tmp + "," + i);
+         wh.push(tmp);
+       }
+       ca = ca.join(",");
+       wh = wh.join(" OR ");
+       so.query()
+          .withDataset('eix4-gf83')
+          .select("facility_n as Name, CASE(" + ca + /*",true,-1*/ ") as loupe, count(*)")
+          .group("facility_n, loupe")
+          .where(wh)
+          .order("loupe")
+          .limit(5000)
+          .getRows()
+          .on('success', function(data) {
+             data = data.map(function(curr) {
+                return {
+                   Name: curr.Name,
+                   loupe: "Loupe " + curr.loupe,
+                   Nid: +curr.loupe,
+                   count: +curr.count
+                }
+             });
+
+             $("#treeMap1")
+                .html("<h5>Park District Facilities by loupe area</h5>")
+             charts["treeMap"] = d3plus.viz()
+                .container("#treeMap1")
+                .data(data)
+                .type("tree_map")
+                .id(["loupe", "Name"])
+                .size("count")
+                .height(400)
+                .width(400)
+                .color({
+                  heatmap: colors,
+                  value: function(d){
+                    if( typeof d.Name != 'string'){
+                      return colors[d.loupe.charAt(6)]
+                    }else{
+                      return d.Name.length
+                    }
+                  }
+
+                })
+                .draw()
+          });
+
+       $.when(
+             $.ajax(so.query()
+                .withDataset('uahe-iimk')
+                .select(select)
+                .getURL()),
+             $.ajax(so.query()
+                .withDataset('9rg7-mz9y')
+                .select(select)
+                .getURL()),
+             $.ajax(so.query()
+                .withDataset('b4bk-rjxe')
+                .select(select)
+                .getURL()),
+             $.ajax(so.query()
+                .withDataset('t57k-za2y')
+                .select(select)
+                .getURL()))
+          .done(function(v1, v2, v3) {
+             var columns = [];
+             for (var i = 1; i <= drag.length; i++) {
+                columns.push(["Loupe " + i])
+             }
+             for (var i = 0; i < arguments.length; i++) {
+                for (var l in arguments[i][0][0]) {
+                   var j = parseInt(l.charAt(l.length - 1));
+                   columns[j].push(arguments[i][0][0][l])
+                }
+             }
+             charts["buildingChart"].load({
+                columns: columns
+             })
+          });
+     })
    }
-   ca = ca.join(",");
-   wh = wh.join(" OR ");
-   so.query()
-      .withDataset('eix4-gf83')
-      .select("facility_n as Name, CASE(" + ca + /*",true,-1*/ ") as loupe, count(*)")
-      .group("facility_n, loupe")
-      .where(wh)
-      .order("loupe")
-      .limit(5000)
-      .getRows()
-      .on('success', function(data) {
-        var loupesColors = ["Blue", "Orange", "Green"];
-         data = data.map(function(curr) {
-            return {
-               Name: curr.Name,
-               loupe: loupesColors[curr.loupe],
-               count: +curr.count
-            }
-         });
-
-         $("#treeMap1")
-            .html("<h5>Park District Facilities by loupe area</h5>")
-         charts["treeMap"] = d3plus.viz()
-            .container("#treeMap1")
-            .data(data)
-            .type("tree_map")
-            .id(["loupe", "Name"])
-            .size("count")
-            .height(400)
-            .width(400)
-            .draw()
-      });
-
-   $.when(
-
-         $.ajax(so.query()
-            .withDataset('uahe-iimk')
-            .select(select)
-            .getURL()),
-         $.ajax(so.query()
-            .withDataset('9rg7-mz9y')
-            .select(select)
-            .getURL()),
-         $.ajax(so.query()
-            .withDataset('b4bk-rjxe')
-            .select(select)
-            .getURL()),
-         $.ajax(so.query()
-            .withDataset('t57k-za2y')
-            .select(select)
-            .getURL()))
-      .done(function(v1, v2, v3) {
-         var columns = [];
-         for (var i = 1; i <= drag.features.length; i++) {
-            columns.push(["Loupe " + i])
-         }
-         for (var i = 0; i < arguments.length; i++) {
-            for (var l in arguments[i][0][0]) {
-               var j = parseInt(l.charAt(l.length - 1));
-               columns[j].push(arguments[i][0][0][l])
-            }
-         }
-         charts["buildingChart"].load({
-            columns: columns
-         })
-      });
-}
-
-
-
-var map = new mapboxgl.Map({
-   container: 'map',
-   style: 'mapbox://styles/mapbox/streets-v9',
-   zoom: 12,
-   center: center
-});
-
-var canvas = map.getCanvasContainer();
-map.addControl(new mapboxgl.NavigationControl());
-map.addControl(new HelloWorldControl());
-
-var popup = new mapboxgl.Popup({
-      offset: 25
-   })
-   .setText('Department of Computer Science – University of Illinois, Chicago');
-
-var flag = document.createElement('div');
-flag.id = "UIC-flag"
-
-new mapboxgl.Marker(flag, {
-      offset: [-25, -25]
-   })
-   .setLngLat(center)
-   .setPopup(popup) // sets a popup on this marker
-   .addTo(map);
-
-var google = document.createElement('div');
-google.className = "search-marker"
-var search = [];
-for (var i = 0; i < drag.features.length; i++) {
-   search.push(
-      new mapboxgl.Marker(google.cloneNode(false), {
-         offset: [-18, -18]
-      })
-      .setLngLat(drag.features[i].geometry.coordinates) // sets a popup on this marker
-      .addTo(map)
-   )
-
-}
-
-
-
-map.on('load', function() {
-
-   // Add a single point to the map
-   map.addSource('point', {
-      "type": "geojson",
-      "data": drag
-   });
-
-   map.addLayer({
-      "id": "point",
-      "type": "circle",
-      "source": "point",
-      "paint": {
-         "circle-radius": {
-            stops: [
-               [0, 0],
-               [20, metersToPixelsAtMaxZoom(1000, center[1])]
-            ],
-            base: 2
-         },
-         "circle-color": {
-            "property": "id",
-            "type": 'categorical',
-            "stops": d3.scale.category10()
-               .domain([0, 10])
-               .range()
-               .map(function(val, ind) {
-                  return [ind, val]
-               })
-         },
-         "circle-opacity": 0.4
-      }
-   });
-
-   // When the cursor enters a feature in the point layer, prepare for dragging.
-   map.on('mouseenter', 'point', function(e) {
-      //map.setPaintProperty('point', 'circle-color', '#3bb2d0');
-      canvas.style.cursor = 'move';
-      window.___point = e.features[0].properties.id;
-      isCursorOverPoint = true;
-      map.dragPan.disable();
-   });
-
-   map.on('mouseleave', 'point', function() {
-      //map.setPaintProperty('point', 'circle-color', '#3887be');
-      canvas.style.cursor = '';
-      isCursorOverPoint = false;
-      map.dragPan.enable();
-
-
-   });
-
-   map.on('mousedown', mouseDown);
-});
+   displayAreas(sodaC);
+};

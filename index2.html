@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Simple Map</title>
+   <meta name="viewport" content="initial-scale=1.0">
+   <meta charset="utf-8">
+   <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+
+      #map {
+         height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+
+      html,
+      body {
+         height: 100%;
+         margin: 0;
+         padding: 0;
+      }
+   </style>
+</head>
+
+<body>
+   <div id="map"></div>
+   <script>
+      var map;
+
+      function initMap() {
+         var center = {
+            lng: -87.6505,
+            lat: 41.8708
+         };
+         map = new google.maps.Map(document.getElementById('map'), {
+            center: center,
+            zoom: 14
+         });
+         var infoWindow = new google.maps.InfoWindow({
+            content: 'Department of Computer Science – University of Illinois, Chicago'
+         });
+
+         var UniversityMarker = new google.maps.Marker({
+            position: center,
+            icon: {
+               url: "images/markers/university-marker.png",
+               scaledSize: {
+                  width: 60,
+                  height: 60
+               }
+            },
+            map: map
+         });
+
+         UniversityMarker.addListener('click', function() {
+            infoWindow.setContent('Department of Computer Science <br> University of Illinois, Chicago');
+            infoWindow.open(map, UniversityMarker);
+         });
+      }
+   </script>
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYZYRqUwPRnxKQ6cBp81DIq1w-MamF24U&callback=initMap" async defer></script>
+</body>
+
+</html>

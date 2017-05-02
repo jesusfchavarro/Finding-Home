@@ -5,7 +5,8 @@
    <meta charset='utf-8' />
    <title>Find Home</title>
    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.35.0/mapbox-gl.js'></script>
+   <!--script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.35.0/mapbox-gl.js'></script-->
+
    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.9/semantic.min.js"></script>
    <script src="https://d3js.org/d3.v3.min.js"></script>
@@ -65,19 +66,25 @@
                   </div>
                   <div class="field">
                      <div class="ui toggle checkbox">
-                        <input class="layer-menu2" type="checkbox" data-layer="unclustered-bikeRacks,clustered-bikeRacks,bikeRacks-count">
+                        <input class="layer-menu" type="checkbox" data-layer="librarie-markers">
+                        <label>Libraries</label>
+                     </div>
+                  </div>
+                  <div class="field">
+                     <div class="ui toggle checkbox">
+                        <input class="layer-menu2" type="checkbox" data-layer="bike_racks">
                         <label>Bike Racks - is you love your bike</label>
                      </div>
                   </div>
                   <div class="field">
                      <div class="ui toggle checkbox">
-                        <input class="layer-menu2" type="checkbox" data-layer="unclustered-bikesDivvy,docks-count,clustered-bikesDivvy,bikesDivvy-count">
+                        <input class="layer-menu2" type="checkbox" data-layer="bike_divvy">
                         <label><a href="https://www.divvybikes.com/">Divvi Bike</a> Stations - is you love bike</label>
                      </div>
                   </div>
                   <h3>Filters</h3>
                   <div class="field">
-                     <label>Only show Affordable Rental Houses in a distance of <span id="distance-University">3</span>Km: </label>
+                     <label>Only show Affordable Rental Houses in a distance of <span id="distance-University">2</span>Km: </label>
                      <input type="range" min=1.5 max=27 step='0.5' value='2' id="max-distance">
                   </div>
                   <h4 class="ui dividing header ">Transport</h4>
@@ -123,7 +130,7 @@
 
                <h4 class="ui dividing header">Community Areas</h4>
                <div class="ui toggle checkbox">
-                  <input class="community_area click-me" type="checkbox" data-chart="CA" checked="checked">
+                  <input class="layer-menu community_area click-me" type="checkbox" data-chart="CA" data-layer="community_areas" checked="checked">
                   <label>Show community areas</label>
                </div>
                <form class="ui form CA">
@@ -281,10 +288,13 @@
    <script src="js/echarts.js"></script>
    <script src="js/climate.js"></script>
    <script src="js/interaction.js"></script>
-   <script src="js/MapBoxInteraction.js"></script>
+
+   <script src="js/GoogleInteraction.js"></script>
    <script src="js/map.js"></script>
    <script src="js/mapData.js"></script>
    <script src="js/communityAreasCharts.js"></script>
+   <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCYZYRqUwPRnxKQ6cBp81DIq1w-MamF24U&callback=main"></script>
 
 </body>
 
